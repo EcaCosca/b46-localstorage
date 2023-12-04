@@ -42,12 +42,12 @@ from.addEventListener("submit", handleSubmit);
 // GROCERY EXAMPLE
 
 const handleDelete = (event) => {
-    console.log(event.target.innerText);
+    console.log(typeof Number(event.target.id));
 
     const grocerysArr = JSON.parse(localStorage.getItem("grocerys"))
 
     const newGrocerysArr = grocerysArr.filter((grocery) => {
-        return grocery !== event.target.innerText
+        return grocery.id !== Number(event.target.id)
     })
 
     localStorage.setItem("grocerys", JSON.stringify(newGrocerysArr))
@@ -57,10 +57,15 @@ const handleDelete = (event) => {
 
 // ADDS THE GROCERY TO THE ORDERED LIST
 const addGroceryToList = (grocery) => {
+    // {
+    //     id:156498646413
+    //     title:"pear"
+    // }
     const li = document.createElement("li");
 
-    li.innerHTML = `${grocery}`;
+    li.innerHTML = `${grocery.title}`;
     li.addEventListener("click", handleDelete)
+    li.id = grocery.id;
 
     ol.appendChild(li);
 }
@@ -77,6 +82,11 @@ if(checkGrocerys){
 const handleGrocerySubmit = (e) => {
     e.preventDefault();
 
+    if(e.target[0].value == ""){
+        alert("Please enter a grocery")
+        return
+    }
+
     let grocerysArr = [];
     
     // CHECKING IF THERE'S A GROCERY LIST IN LOCALSTORAGE
@@ -85,8 +95,16 @@ const handleGrocerySubmit = (e) => {
         grocerysArr = JSON.parse(localStorage.getItem("grocerys"))
     }
 
+    // CREATE A UNIQUE ID FOR THE GROCERY
+    const d = new Date();
+    let ms = d.getMilliseconds();
+    id = Math.floor(Math.random() * 1000 * ms);
+
     // GETTING THE VALUE OF THE INPUT
-    const grocery = e.target[0].value
+    const grocery = {
+        id: id,
+        title: e.target[0].value
+    }
 
     // ADDING THE NEW GROCERY TO THE ARRAY
     grocerysArr.push(grocery)
